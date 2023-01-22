@@ -157,7 +157,7 @@ std::optional<TDialog*> TForm::createDialog(const std::string& title) {
     return std::nullopt;
   }
   const int buttonHeight = 3;
-  int width = cols_.size();
+  int width = cols_.size() + 2;
   int height = buttonHeight;
   for (const auto* c : cols_) {
     width += c->width();

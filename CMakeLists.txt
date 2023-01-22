@@ -22,6 +22,6 @@ target_link_libraries(tvwcommon PRIVATE
   tvision::tvision
 )
 target_include_directories(tvwcommon PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:include>
 )
