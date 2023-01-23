@@ -48,13 +48,13 @@
 #include <string>
 
 TFormColumn::TFormColumn(Options o)
-    : TFormColumn(o.x, o.y, o.pad, o.maxLabelWidth, o.controlWidth,
+    : TFormColumn(o.x, o.y, o.pad, o.maxLabelWidth, o.maxControlWidth,
                   o.labelPos) {}
 
 TFormColumn::TFormColumn(int x, int y, int pad, int maxLabelWidth,
-                         int controlWidth, TFormColumn::LabelPosition labelPos)
+                         int maxControlWidth, TFormColumn::LabelPosition labelPos)
     : x_(x), y_(y), pad_(pad), labelWidth_(maxLabelWidth),
-      controlWidth_(controlWidth), labelPos_(labelPos) {}
+      controlWidth_(maxControlWidth), labelPos_(labelPos) {}
 
 TFormColumn::~TFormColumn() = default;
 
@@ -151,6 +151,7 @@ bool TFormColumn::selectFirstControl() {
 
 
 void TForm::add(TFormColumn* c) {
+  c->set_num(cols_.size());
   cols_.emplace_back(c);
 }
 

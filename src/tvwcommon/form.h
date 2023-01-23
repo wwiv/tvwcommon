@@ -37,9 +37,10 @@ public:
   struct Options {
     int x{ 0 };
     int y{ 0 };
+    int colspan{ 1 };
     int pad{ 2 };
     int maxLabelWidth{ 10 };
-    int controlWidth{ 20 };
+    int maxControlWidth{ 20 };
     LabelPosition labelPos{ LabelPosition::left };
   };
 
@@ -59,6 +60,7 @@ public:
   int moveX(int r) { x_ += r; return x_; }
 
   void set_ypad(int y) { ypad_ = y; }
+  void set_num(int num) { num_ = num; }
 
   void updateLabelWidths();
   TDialog* insertTo(TDialog* dialog);
@@ -73,8 +75,11 @@ private:
   TDialog* insertLabelLeftTo(TDialog* dialog, int btnPad, int btnX, int y);
   TDialog* insertLabelBelowTo(TDialog* dialog, int btnPad, int btnX, int y);
 
+  // Column number
+  int num_{ 0 }; 
   int x_{ 0 };
   int y_{ 0 };
+  int colspan_{ 1 };
   int pad_{ 0 };
   int ypad_{ 1 };
   int labelWidth_{ 0 };
