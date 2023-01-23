@@ -47,9 +47,13 @@
 #include <sstream>
 #include <string>
 
-TFormColumn::TFormColumn(int x, int y, int pad, int labelWidth,
+TFormColumn::TFormColumn(Options o)
+    : TFormColumn(o.x, o.y, o.pad, o.maxLabelWidth, o.controlWidth,
+                  o.labelPos) {}
+
+TFormColumn::TFormColumn(int x, int y, int pad, int maxLabelWidth,
                          int controlWidth, TFormColumn::LabelPosition labelPos)
-    : x_(x), y_(y), pad_(pad), labelWidth_(labelWidth),
+    : x_(x), y_(y), pad_(pad), labelWidth_(maxLabelWidth),
       controlWidth_(controlWidth), labelPos_(labelPos) {}
 
 TFormColumn::~TFormColumn() = default;
@@ -86,9 +90,12 @@ int TFormColumn::height() const {
 }
 
 void TFormColumn::updateLabelWidths() {
+  int width = 5;
   for (const auto& item : items_) {
-    labelWidth_ = std::max<int>(labelWidth_, item.labelText.size());
+    width = std::max<int>(width, item.labelText.size());
   }
+  ++width;
+  labelWidth_ = std::min<int>(width, labelWidth_);
 }
 
 TDialog* TFormColumn::insertLabelLeftTo(TDialog* dialog, int btnPad, int btnX, int y) {
@@ -97,12 +104,15 @@ TDialog* TFormColumn::insertLabelLeftTo(TDialog* dialog, int btnPad, int btnX, i
   for (auto& item : items_) {
     const auto bounds = item.control->getBounds();
     const auto height = bounds.b.y - bounds.a.y;
+    const auto existingWidth = bounds.b.x - bounds.a.x;
+    // We want the smaller of control width or preferred width already set.
+    const auto width = std::min<int>(controlWidth_, existingWidth);
     TRect lr(pad_, y, pad_ + labelWidth_, y + 1);
-    TRect cr(ctrlX, y, ctrlX + controlWidth_, y + height);
+    TRect cr(ctrlX, y, ctrlX + width, y + height);
     item.control->setBounds(cr);
     dialog->insert(item.control);
     dialog->insert(new TLabel(lr, item.labelText, item.control));
-    y += height + 1;
+    y += height + ypad_;
   }
   return dialog;
 }
@@ -168,7 +178,7 @@ std::optional<TDialog*> TForm::createDialog(const std::string& title) {
   if (!buttons_.empty()) {
     height += buttonHeight;
   }
-  TRect bounds(0, 0, width, height);
+  TRect bounds(0, 0, width + 2, height);
   TDialog* d = new TDialog(bounds, title);
   int x = 0;
   for (auto* c : cols_) {

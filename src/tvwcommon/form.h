@@ -34,7 +34,16 @@
 class TFormColumn {
 public:
   enum class LabelPosition { left, above };
+  struct Options {
+    int x{ 0 };
+    int y{ 0 };
+    int pad{ 2 };
+    int maxLabelWidth{ 10 };
+    int controlWidth{ 20 };
+    LabelPosition labelPos{ LabelPosition::left };
+  };
 
+  TFormColumn(Options options);
   TFormColumn(int x, int y, int pad, int labelWidth, int controlWidth,
               LabelPosition labelPos);
   TFormColumn(int labelWidth, int controlWidth, LabelPosition labelPos)
@@ -48,6 +57,8 @@ public:
   void set_x(int x) { x_ = x; }
   int x() const { return x_; }
   int moveX(int r) { x_ += r; return x_; }
+
+  void set_ypad(int y) { ypad_ = y; }
 
   void updateLabelWidths();
   TDialog* insertTo(TDialog* dialog);
@@ -65,10 +76,10 @@ private:
   int x_{ 0 };
   int y_{ 0 };
   int pad_{ 0 };
+  int ypad_{ 1 };
   int labelWidth_{ 0 };
   int controlWidth_{ 0 };
   LabelPosition labelPos_{ LabelPosition::left };
-  
   std::vector<Item> items_;
 };
 

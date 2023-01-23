@@ -79,34 +79,40 @@ public:
   TFormInputLine(const TRect& bounds, std::string* data, unsigned int maxLen, TValidator* valid = nullptr)
     : TInputLine(bounds, maxLen, valid), data_(data) {}
   TFormInputLine(std::string* data, unsigned int maxLen, TValidator* valid = nullptr)
-    : TInputLine(TRect(0, 0, 10, 1), maxLen, valid), data_(data) {}
+    : TInputLine(TRect(0, 0, maxLen, 1), maxLen, valid), data_(data) {}
   virtual ~TFormInputLine() = default;
-  virtual void getData(void* rec);
-  virtual void setData(void* rec);
+  virtual TPalette& getPalette() const;
+  TColorAttr mapColor(uchar index) noexcept override;
+  void setState(ushort aState, Boolean enable);
 
-private:
+
+  virtual void getData(void* rec) override;
+  virtual void setData(void* rec) override;
+
+protected:
   std::string* data_{ nullptr };
 };
 
 template <typename T,
           typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
-class TFormNumberInputLine : public TInputLine {
+class TFormNumberInputLine : public TFormInputLine {
 
 public:
   TFormNumberInputLine(const TRect& bounds, T* data, TValidator* valid)
-    : TInputLine(bounds, std::numeric_limits<T>::digits10 + 2, valid), data_(data) {}
+    : TFormInputLine(bounds, data, std::numeric_limits<T>::digits10 + 2, valid) {}
   TFormNumberInputLine(T* data, TValidator* valid)
     : TFormNumberInputLine(TRect(0, 0, 10, 1), valid) {}
   TFormNumberInputLine(T* data) : TFormNumberInputLine(TRect(0, 0, 10, 1), data, nullptr) {}
   virtual ~TFormNumberInputLine() = default;
 
-  virtual void getData(void* rec) {
+
+  virtual void getData(void* rec) override {
     char x[std::numeric_limits<T>::digits10 + 2] = {};
     TInputLine::getData(&x);
     *data_ = detail::to_number<int>(x);
   }
 
-  virtual void setData(void* rec) {
+  virtual void setData(void* rec) override {
     char x[std::numeric_limits<T>::digits10 + 2] = {};
     const auto s = fmt::format("{:d}", *data_);
     detail::to_char_array_trim(x, s);

@@ -55,6 +55,31 @@ static bool to_char_array_trim(char(&out)[SIZE], const std::string& s) noexcept 
   return s.size() <= SIZE;
 }
 
+#define cpFormInputLine "\x13\xF0\x14\x15"
+
+TPalette& TFormInputLine::getPalette() const {
+  static TPalette palette(cpFormInputLine, sizeof(cpFormInputLine) - 1);
+  return palette;
+}
+
+TColorAttr TFormInputLine::mapColor(uchar index) noexcept {
+  switch (index) {
+  case 1:
+    return 0x0E;
+  case 2:
+    return 0x1F;
+  default:
+    return TInputLine::mapColor(index);
+  }
+}
+
+void TFormInputLine::setState(ushort state, Boolean enable) {
+  TInputLine::setState(state, enable);
+  if ((state & sfFocused) && enable) {
+    draw();
+  }
+}
+
 void TFormInputLine::getData(void* rec) {
   // Fetch from internal model
 
