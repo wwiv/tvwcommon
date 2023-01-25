@@ -52,28 +52,34 @@ public:
   ~TFormColumn();
 
   bool add(const std::string& labelText, TView* control);
+  bool add(TFormColumn* column);
 
   int width() const;
   int height() const;
   void set_x(int x) { x_ = x; }
   int x() const { return x_; }
+  int y() const { return y_; }
   int moveX(int r) { x_ += r; return x_; }
 
   void set_ypad(int y) { ypad_ = y; }
   void set_num(int num) { num_ = num; }
 
-  void updateLabelWidths();
-  TDialog* insertTo(TDialog* dialog);
+  void updateLabelWidths() const;
+  TGroup* insertTo(TGroup* dialog);
+  TGroup* insertTo(TGroup* dialog, int x, int y);
   bool selectFirstControl();
+
+  const std::vector<TFormColumn*>& sub_columns() const { return sub_columns_; }
 
 private:
   struct Item {
     std::string labelText;
-    TView *control;
+    TView *control{ nullptr };
   };
 
-  TDialog* insertLabelLeftTo(TDialog* dialog, int btnPad, int btnX, int y);
-  TDialog* insertLabelBelowTo(TDialog* dialog, int btnPad, int btnX, int y);
+  TGroup* insertSubFormLeft(TGroup* dialog, TFormColumn* col, int x, int y);
+  TGroup* insertLabelLeftTo(TGroup* dialog, int x, int y);
+  TGroup* insertLabelBelowTo(TGroup* dialog, int x, int y);
 
   // Column number
   int num_{ 0 }; 
@@ -82,10 +88,12 @@ private:
   int colspan_{ 1 };
   int pad_{ 0 };
   int ypad_{ 1 };
-  int labelWidth_{ 0 };
-  int controlWidth_{ 0 };
+  // Kunda hacky, but want ::width() to be const.
+  mutable int labelWidth_{ 0 };
+  mutable int controlWidth_{ 0 };
   LabelPosition labelPos_{ LabelPosition::left };
   std::vector<Item> items_;
+  std::vector<TFormColumn*> sub_columns_;
 };
 
 class TForm {
